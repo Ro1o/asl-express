@@ -1,9 +1,11 @@
-// seedLessons.js
+// ----------------------------
+// 🌱 Seed Lessons for After School Lessons API
+// ----------------------------
 require('dotenv').config({ path: './.env' });
 const { MongoClient } = require('mongodb');
 const os = require('os');
 
-// 🧠 Detect your Wi-Fi IPv4 address automatically
+// 🧠 Detect local IP (for testing)
 function getLocalIP() {
   const nets = os.networkInterfaces();
   for (const name of Object.keys(nets)) {
@@ -16,13 +18,18 @@ function getLocalIP() {
   return 'localhost';
 }
 
-// 🌍 Use detected IP or fallback manually to your Wi-Fi IP
+// 🌍 Automatically detect environment
+const IS_RENDER = process.env.RENDER === 'true' || process.env.NODE_ENV === 'production';
 const LOCAL_IP = getLocalIP();
-const BASE_URL = 'http://localhost:8080'; // e.g., http://192.168.100.21:8080
+
+// ✅ Use Render URL in production, localhost otherwise
+const BASE_URL = IS_RENDER
+  ? 'https://asl-express.onrender.com'
+  : `http://localhost:8080`;
 
 console.log(`🌍 Using BASE_URL = ${BASE_URL}`);
 
-// 🧩 Lessons Data (20 total)
+// 🧩 Lessons Data
 const lessons = [
   { topic: 'Mathematics', teacher: 'Mr. Patel', location: 'Hendon', price: 100, space: 5, icon: '📐', image: `${BASE_URL}/images/maths.jpg` },
   { topic: 'Cybersecurity', teacher: 'Dr. Lee', location: 'Colindale', price: 95, space: 5, icon: '🔬', image: `${BASE_URL}/images/cyber.jpg` },
@@ -46,7 +53,7 @@ const lessons = [
   { topic: 'Robotics', teacher: 'Dr. Kim', location: 'Colindale', price: 130, space: 5, icon: '🤖', image: `${BASE_URL}/images/robotics.jpg` },
 ];
 
-// 🚀 Main Seeder
+// 🚀 Seeder
 async function run() {
   const client = new MongoClient(process.env.MONGO_URI);
   try {
@@ -61,9 +68,8 @@ async function run() {
 
     // Insert new lessons
     const result = await db.collection('lesson').insertMany(lessons);
-    console.log(`✅ Seeded ${result.insertedCount} lessons with images.`);
+    console.log(`✅ Seeded ${result.insertedCount} lessons.`);
     console.log(`📸 Image base URL: ${BASE_URL}`);
-
   } catch (err) {
     console.error("❌ Seeding failed:", err.message);
   } finally {
@@ -72,5 +78,5 @@ async function run() {
   }
 }
 
-// 🏁 Run the script
+// 🏁 Run Seeder
 run();

@@ -20,14 +20,17 @@ const PORT = process.env.PORT || 8080;
 // ------------------
 // Middleware Section
 // ------------------
-app.use(cors());
+
+// ✅ Allow all origins (so GitHub Pages frontend can access it)
+app.use(cors({ origin: "*", methods: ["GET", "POST"], allowedHeaders: ["Content-Type"] }));
+
 app.use(express.json());
 app.use(logger);
 
 // ✅ Serve public folder from project root
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// ✅ Images can be accessed via http://localhost:8080/images/art.jpg
+// ✅ Serve images correctly on Render (no localhost URLs)
 app.use('/images', express.static(path.join(__dirname, '..', 'public/images')));
 
 // ------------------
@@ -60,9 +63,10 @@ async function startServer() {
     const db = client.db(process.env.DB_NAME || 'AfterSchoolDB');
     app.locals.db = db;
 
+    // ✅ Use 0.0.0.0 so Render can bind properly
     app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`🖼️  Test image: http://localhost:${PORT}/images/art.jpg`);
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🖼️  Test image: https://asl-express.onrender.com/images/art.jpg`);
     });
   } catch (err) {
     console.error('❌ Failed to connect to MongoDB:', err.message);
