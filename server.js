@@ -27,11 +27,11 @@ app.use(cors({ origin: "*", methods: ["GET", "POST"], allowedHeaders: ["Content-
 app.use(express.json());
 app.use(logger);
 
-// ✅ Serve public folder from project root
-app.use(express.static(path.join(__dirname, '..', 'public')));
+// ✅ Serve public folder from inside express-backend
+app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ Serve images correctly on Render (no localhost URLs)
-app.use('/images', express.static(path.join(__dirname, '..', 'public/images')));
+// ✅ Serve images from express-backend/public/images
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 // ------------------
 // Routes Section
